@@ -10,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository, implicit val ec: ExecutionContext) extends BaseController {
+
   def index(): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.index().map {
       case Right(item: Seq[DataModel]) => Ok {
@@ -27,7 +28,12 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-  def read(id: String): Action[AnyContent] = TODO
+  def read(id: String): Action[AnyContent] = Action.async { implicit request =>
+    dataRepository.read(id).map {
+      case data: DataModel => Ok(Json.toJson(data)) // Successfully found item
+      case _ => NotFound(Json.toJson(s"Unable to find data for ID: $id")) // Handles missing data and errors
+    }
+  }
 
   def update(id: String): Action[AnyContent] = TODO
 

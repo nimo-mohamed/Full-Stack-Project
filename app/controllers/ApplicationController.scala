@@ -1,7 +1,7 @@
 package controllers
 
 import models.DataModel
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
 import repositories.DataRepository
 
@@ -19,7 +19,13 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-  def create(): Action[AnyContent] = TODO
+  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[DataModel] match {
+      case JsSuccess(dataModel, _) =>
+        dataRepository.create(dataModel).map(_ => Created)
+      case JsError(_) => Future(BadRequest)
+    }
+  }
 
   def read(id: String): Action[AnyContent] = TODO
 

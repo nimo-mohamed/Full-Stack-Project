@@ -35,7 +35,14 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-  def update(id: String): Action[AnyContent] = TODO
+  def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[DataModel] match {
+      case JsSuccess(dataModel, _) => dataRepository.update(id, dataModel).flatMap{
+        _=> dataRepository.read(id).map(book => Accepted {Json.toJson(book)})
+      }
+      case JsError(_) => Future(BadRequest)
+    }
+  }
 
   def delete(id: String): Action[AnyContent] = TODO
 }

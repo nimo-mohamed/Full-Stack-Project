@@ -1,5 +1,6 @@
 package controllers
 
+import akka.io.dns.internal.DnsClient.DnsQuestion
 import models.DataModel
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
@@ -37,14 +38,22 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
-      case JsSuccess(dataModel, _) => dataRepository.update(id, dataModel).flatMap{
-        _=> dataRepository.read(id).map(book => Accepted {Json.toJson(book)})
+      case JsSuccess(dataModel, _) => dataRepository.update(id, dataModel).flatMap {
+        _ => dataRepository.read(id).map(book => Accepted {
+          Json.toJson(book)
+        })
       }
       case JsError(_) => Future(BadRequest)
     }
   }
 
-  def delete(id: String): Action[AnyContent] = TODO
+  def delete(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[DataModel] match {
+      case JsSuccess(dataModel, _) => dataRepository.delete(id).map(_ => Accepted)
+      case JsError(_) => Future(BadRequest)
+    }
+  }
+
 }
 
 

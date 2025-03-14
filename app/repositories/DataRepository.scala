@@ -24,8 +24,8 @@ class DataRepository @Inject()(
   replaceIndexes = false
 ) {
 
-  def index(): Future[Either[Int, Seq[DataModel]]]  =
-    collection.find().toFuture().map{
+  def index(): Future[Either[Int, Seq[DataModel]]] =
+    collection.find().toFuture().map {
       case books: Seq[DataModel] => Right(books)
       case _ => Left(404)
     }

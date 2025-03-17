@@ -83,12 +83,28 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
 
       val updatedContent = contentAsJson(updatedResult).as[DataModel]
-            updatedContent.name shouldBe "Updated Book Name"
+      updatedContent.name shouldBe "Updated Book Name"
       afterEach()
     }
   }
   "ApplicationController .delete(id: String)" should {
+    "delete an existing book by id" in {
+      beforeEach()
+      val request: FakeRequest[JsValue] = buildPost("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
 
+      status(createdResult) shouldBe Status.CREATED
+
+      val deleteRequest: FakeRequest[JsValue] = buildPost(s"/api/${dataModel._id}").withBody(Json.toJson(dataModel))
+
+      val deletedResult: Future[Result] = TestApplicationController.delete(dataModel._id)(deleteRequest)
+      status(deletedResult) shouldBe Status.ACCEPTED
+
+      //      val confirmDelete: Future[Result] = TestApplicationController.read(dataModel._id)(FakeRequest())
+      //      status(confirmDelete) shouldBe Status.NOT_FOUND
+
+      afterEach()
+    }
   }
 
 

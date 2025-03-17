@@ -13,8 +13,7 @@ import scala.concurrent.Future
 class ApplicationControllerSpec extends BaseSpecWithApplication {
 
   val TestApplicationController = new ApplicationController(
-    component, repository, executionContext
-  )
+    component, repository)(executionContext)
 
   private val dataModel: DataModel = DataModel(
     "abcd",
@@ -24,27 +23,41 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
   )
 
   "ApplicationController .index" should {
-
-    val result = TestApplicationController.index()(FakeRequest())
-
-    "return TODO" in {
+    "return OK" in {
+      beforeEach
+      val result = TestApplicationController.index()(FakeRequest())
       status(result) shouldBe Status.OK
+      afterEach
     }
   }
 
   "ApplicationController .create" should {
 
     "create a book in the database" in {
-
+      beforeEach
       val request: FakeRequest[JsValue] = buildPost("/api").withBody[JsValue](Json.toJson(dataModel))
       val createdResult: Future[Result] = TestApplicationController.create()(request)
 
       status(createdResult) shouldBe Status.CREATED
+      afterEach
     }
   }
 
-  "ApplicationController .read(id: String)" should {
+  "ApplicationController .read" should {
 
+    "find a book in the database by id" in {
+      beforeEach
+      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
+
+      status(createdResult) shouldBe Status.CREATED
+
+      val readResult: Future[Result] = TestApplicationController.read("abcd")(FakeRequest())
+
+      status(readResult) shouldBe CREATED
+      contentAsJson(readResult).as[JsValue] shouldBe "abcd"
+      afterEach
+    }
   }
 
   "ApplicationController .update(id: String)" should {
@@ -53,6 +66,10 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
   "ApplicationController .delete(id: String)" should {
 
   }
+
+  override def beforeEach(): Unit = await(repository.deleteAll())
+
+  override def afterEach(): Unit = await(repository.deleteAll())
 
 
 }

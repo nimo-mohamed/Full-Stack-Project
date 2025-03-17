@@ -36,6 +36,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(result) shouldBe Status.OK
       afterEach()
     }
+
   }
 
   "ApplicationController .create" should {
@@ -75,7 +76,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(createdResult) shouldBe Status.CREATED
 
       val updatedModel = dataModel.copy(name = "Updated Book Name")
-      val updateRequest: FakeRequest[JsValue] = buildPost("/api/${dataModel._id}").withBody[JsValue](Json.toJson(updatedModel))
+      val updateRequest: FakeRequest[JsValue] = buildPut("/api/${dataModel._id}").withBody[JsValue](Json.toJson(updatedModel))
 
 
       val updatedResult: Future[Result] = TestApplicationController.update(dataModel._id)(updateRequest)
@@ -95,7 +96,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       status(createdResult) shouldBe Status.CREATED
 
-      val deleteRequest: FakeRequest[JsValue] = buildPost(s"/api/${dataModel._id}").withBody(Json.toJson(dataModel))
+      val deleteRequest: FakeRequest[JsValue] = buildDelete(s"/api/${dataModel._id}").withBody(Json.toJson(dataModel))
 
       val deletedResult: Future[Result] = TestApplicationController.delete(dataModel._id)(deleteRequest)
       status(deletedResult) shouldBe Status.ACCEPTED

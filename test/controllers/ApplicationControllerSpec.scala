@@ -49,6 +49,14 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(createdResult) shouldBe Status.CREATED
       afterEach()
     }
+    "Return a bad request, 400" in {
+      beforeEach()
+      val invalidRequest: FakeRequest[JsValue] = buildPost("/api").withBody(Json.obj("invalid" -> "data"))
+      val createdResult: Future[Result] = TestApplicationController.create()(invalidRequest)
+
+      status(createdResult) shouldBe Status.BAD_REQUEST
+      afterEach()
+    }
   }
 
   "ApplicationController .read" should {

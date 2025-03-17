@@ -4,6 +4,8 @@ import baseSpec.BaseSpecWithApplication
 import models.DataModel
 import play.api.test.FakeRequest
 import play.api.http.Status
+import play.api.libs.json.Format.GenericFormat
+import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -24,39 +26,38 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
   "ApplicationController .index" should {
     "return OK" in {
-      beforeEach
+      beforeEach()
       val result = TestApplicationController.index()(FakeRequest())
       status(result) shouldBe Status.OK
-      afterEach
+      afterEach()
     }
   }
 
   "ApplicationController .create" should {
 
     "create a book in the database" in {
-      beforeEach
+      beforeEach()
       val request: FakeRequest[JsValue] = buildPost("/api").withBody[JsValue](Json.toJson(dataModel))
       val createdResult: Future[Result] = TestApplicationController.create()(request)
 
       status(createdResult) shouldBe Status.CREATED
-      afterEach
+      afterEach()
     }
   }
 
   "ApplicationController .read" should {
 
     "find a book in the database by id" in {
-      beforeEach
+      beforeEach()
       val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
       val createdResult: Future[Result] = TestApplicationController.create()(request)
 
       status(createdResult) shouldBe Status.CREATED
 
       val readResult: Future[Result] = TestApplicationController.read("abcd")(FakeRequest())
-
-      status(readResult) shouldBe CREATED
-      contentAsJson(readResult).as[JsValue] shouldBe "abcd"
-      afterEach
+      status(readResult) shouldBe Status.OK
+      contentAsJson(readResult).as[DataModel] shouldBe dataModel
+      afterEach()
     }
   }
 

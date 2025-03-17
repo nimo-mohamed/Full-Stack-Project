@@ -75,7 +75,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-   
+
 //    "return a NOT_FOUND error when an id doesn't exist" in {
 //      beforeEach()
 //      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))

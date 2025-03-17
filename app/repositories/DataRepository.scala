@@ -45,7 +45,10 @@ class DataRepository @Inject()(
     collection.find(byID(id)).headOption flatMap {
       case Some(data) =>
         Future(data)
+//      case None       => Future.failed(new NoSuchElementException(s"Data with id $id not found"))
     }
+
+
 
   def update(id: String, book: DataModel): Future[result.UpdateResult] =
     collection.replaceOne(

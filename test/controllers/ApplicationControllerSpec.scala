@@ -28,7 +28,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
   override def afterEach(): Unit = await(repository.deleteAll())
 
-
+  // ✅ .index test
   "ApplicationController .index" should {
     "return OK" in {
       beforeEach()
@@ -38,7 +38,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     }
 
   }
-
+  // ✅ .create tests
   "ApplicationController .create" should {
 
     "create a book in the database" in {
@@ -59,6 +59,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     }
   }
 
+  // ✅ .read tests
   "ApplicationController .read" should {
 
     "find a book in the database by id" in {
@@ -73,8 +74,24 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       contentAsJson(readResult).as[DataModel] shouldBe dataModel
       afterEach()
     }
+
+   
+//    "return a NOT_FOUND error when an id doesn't exist" in {
+//      beforeEach()
+//      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+//      val createdResult: Future[Result] = TestApplicationController.create()(request)
+//
+//      status(createdResult) shouldBe Status.CREATED
+//
+//      val readResult: Future[Result] = TestApplicationController.read("efgh")(FakeRequest())
+//
+//      status(readResult) shouldBe Status.NOT_FOUND
+//      afterEach()
+//    }
   }
 
+
+  // ✅ .update tests
   "ApplicationController .update(id: String)" should {
     "update an existing book by id" in {
       beforeEach()
@@ -96,6 +113,8 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
   }
+
+  // ✅ .delete tests
   "ApplicationController .delete(id: String)" should {
     "delete an existing book by id" in {
       beforeEach()
@@ -114,6 +133,16 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       afterEach()
     }
+//    "return a bad request error when id isn't found" in {
+//      beforeEach()
+//      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+//      //val createdResult: Future[Result] = TestApplicationController.create()(request)
+//      //status(request) shouldBe Status.CREATED
+//      val deleteResult: Future[Result] = TestApplicationController.delete("abt")(request)
+//
+//      status(deleteResult) shouldBe Status.BAD_REQUEST
+//      afterEach()
+//    }
   }
 
 

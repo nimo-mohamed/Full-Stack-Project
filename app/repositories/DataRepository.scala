@@ -45,7 +45,7 @@ class DataRepository @Inject()(
     collection.find(byID(id)).headOption flatMap {
       case Some(data) =>
         Future(data)
-//      case None       => Future.failed(new NoSuchElementException(s"Data with id $id not found"))
+      case None       => Future.failed(new NoSuchElementException(s"Data with id $id not found"))
     }
 
 

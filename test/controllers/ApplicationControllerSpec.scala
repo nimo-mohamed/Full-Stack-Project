@@ -24,9 +24,6 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     100
   )
 
-  override def beforeEach(): Unit = await(repository.deleteAll())
-
-  override def afterEach(): Unit = await(repository.deleteAll())
 
   // ✅ .index test
   "ApplicationController .index" should {
@@ -70,25 +67,37 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(createdResult) shouldBe Status.CREATED
 
       val readResult: Future[Result] = TestApplicationController.read("abcd")(FakeRequest())
+      println(readResult)
       status(readResult) shouldBe Status.OK
       contentAsJson(readResult).as[DataModel] shouldBe dataModel
       afterEach()
     }
+    "return a NOT_FOUND error when an id doesn't exist" in {
+      beforeEach()
 
 
-//    "return a NOT_FOUND error when an id doesn't exist" in {
-//      beforeEach()
-//      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
-//      val createdResult: Future[Result] = TestApplicationController.create()(request)
-//
-//      status(createdResult) shouldBe Status.CREATED
-//
-//      val readResult: Future[Result] = TestApplicationController.read("efgh")(FakeRequest())
-//
-//      status(readResult) shouldBe Status.NOT_FOUND
-//      afterEach()
-//    }
+      val readResult: Future[Result] = TestApplicationController.read("grdt")(FakeRequest())
+
+      status(readResult) shouldBe Status.NOT_FOUND
+      afterEach()
+    }
+    //    "Return a NOT_FOUND, 404" in {
+    //      beforeEach()
+    //
+    //      val nonExistentId = "non-existent-id"
+    //      val request = buildGet("/api/$nonExistentId")
+    //
+    //      val readResult: Future[Result] = TestApplicationController.read(nonExistentId)(request)
+    //
+    //      status(readResult) shouldBe Status.NOT_FOUND
+    //      contentAsString(readResult) should include("Unable to find data for ID")
+    //
+    //      afterEach()
+    //    }
   }
+
+
+
 
 
   // ✅ .update tests
@@ -126,24 +135,27 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       val deleteRequest: FakeRequest[JsValue] = buildDelete(s"/api/${dataModel._id}").withBody(Json.toJson(dataModel))
 
       val deletedResult: Future[Result] = TestApplicationController.delete(dataModel._id)(deleteRequest)
+      println(deletedResult)
       status(deletedResult) shouldBe Status.ACCEPTED
 
-      //      val confirmDelete: Future[Result] = TestApplicationController.read(dataModel._id)(FakeRequest())
-      //      status(confirmDelete) shouldBe Status.NOT_FOUND
+      val confirmDelete: Future[Result] = TestApplicationController.read(dataModel._id)(FakeRequest())
+      status(confirmDelete) shouldBe Status.NOT_FOUND
 
       afterEach()
     }
-//    "return a bad request error when id isn't found" in {
-//      beforeEach()
-//      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
-//      //val createdResult: Future[Result] = TestApplicationController.create()(request)
-//      //status(request) shouldBe Status.CREATED
-//      val deleteResult: Future[Result] = TestApplicationController.delete("abt")(request)
-//
-//      status(deleteResult) shouldBe Status.BAD_REQUEST
-//      afterEach()
-//    }
+    //    "return a bad request error when id isn't found" in {
+    //      beforeEach()
+    //      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+    //      //val createdResult: Future[Result] = TestApplicationController.create()(request)
+    //      //status(request) shouldBe Status.CREATED
+    //      val deleteResult: Future[Result] = TestApplicationController.delete("abt")(request)
+    //
+    //      status(deleteResult) shouldBe Status.BAD_REQUEST
+    //      afterEach()
+    //    }
   }
 
+  override def beforeEach(): Unit = await(repository.deleteAll())
 
+  override def afterEach(): Unit = await(repository.deleteAll())
 }

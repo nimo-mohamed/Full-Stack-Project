@@ -74,10 +74,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     }
     "return a NOT_FOUND error when an id doesn't exist" in {
       beforeEach()
-
-
       val readResult: Future[Result] = TestApplicationController.read("grdt")(FakeRequest())
-
       status(readResult) shouldBe Status.NOT_FOUND
       afterEach()
     }
@@ -143,16 +140,12 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       afterEach()
     }
-    //    "return a bad request error when id isn't found" in {
-    //      beforeEach()
-    //      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
-    //      //val createdResult: Future[Result] = TestApplicationController.create()(request)
-    //      //status(request) shouldBe Status.CREATED
-    //      val deleteResult: Future[Result] = TestApplicationController.delete("abt")(request)
-    //
-    //      status(deleteResult) shouldBe Status.BAD_REQUEST
-    //      afterEach()
-    //    }
+    "return a NOT_FOUND error when an id has been deleted" in {
+      beforeEach()
+      val readResult: Future[Result] = TestApplicationController.read("grdt")(FakeRequest())
+      status(readResult) shouldBe Status.NOT_FOUND
+      afterEach()
+    }
   }
 
   override def beforeEach(): Unit = await(repository.deleteAll())

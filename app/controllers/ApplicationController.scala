@@ -60,7 +60,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def delete(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) => dataRepository.delete(id).map(_ => Accepted)
-      case JsError(_) => Future(BadRequest)
+      case JsError(_) => Future(NotFound)
     }
   }
 

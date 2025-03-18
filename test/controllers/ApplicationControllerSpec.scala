@@ -40,7 +40,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
     "create a book in the database" in {
       beforeEach()
-      val request: FakeRequest[JsValue] = buildPost("/api").withBody[JsValue](Json.toJson(dataModel))
+      val request: FakeRequest[JsValue] = buildPost("/api/create").withBody[JsValue](Json.toJson(dataModel))
       val createdResult: Future[Result] = TestApplicationController.create()(request)
 
       status(createdResult) shouldBe Status.CREATED
@@ -120,7 +120,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     }
     "Return a bad request, 400" in {
       beforeEach()
-      val invalidRequest: FakeRequest[JsValue] = buildPut("/api/${dataModel._id}").withBody(Json.obj("invalid" -> "data"))
+      val invalidRequest: FakeRequest[JsValue] = buildPut("/api/${dataModel._id}").withBody(Json.obj("description" -> 2))
       val updatedResult: Future[Result] = TestApplicationController.update(dataModel._id)(invalidRequest)
 
       status(updatedResult) shouldBe Status.BAD_REQUEST

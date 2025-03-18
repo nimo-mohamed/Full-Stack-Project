@@ -118,6 +118,14 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       updatedContent.name shouldBe "Updated Book Name"
       afterEach()
     }
+    "Return a bad request, 400" in {
+      beforeEach()
+      val invalidRequest: FakeRequest[JsValue] = buildPut("/api/${dataModel._id}").withBody(Json.obj("invalid" -> "data"))
+      val updatedResult: Future[Result] = TestApplicationController.update(dataModel._id)(invalidRequest)
+
+      status(updatedResult) shouldBe Status.BAD_REQUEST
+      afterEach()
+    }
   }
 
   // ✅ .delete tests

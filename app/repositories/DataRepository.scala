@@ -54,7 +54,7 @@ class DataRepository @Inject()(
     collection.replaceOne(
       filter = byID(id),
       replacement = book,
-      options = new ReplaceOptions().upsert(true) //What happens when we set this to false?
+      options = new ReplaceOptions().upsert(true) //What happens when we set this to false? It will not create anything.
     ).toFuture()
 
   def delete(id: String): Future[result.DeleteResult] =

@@ -4,8 +4,7 @@ import play.api.libs.json.OFormat
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-//import play.api.libs.ws._
-//import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws._
 //import play.api.libs.json.{Json, OFormat}
 
 class LibraryConnector @Inject()(ws: WSClient) {

@@ -1,16 +1,19 @@
 package controllers
 
 // import akka.io.dns.internal.DnsClient.DnsQuestion
+
 import models.DataModel
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
 import repositories.DataRepository
+import services.ApplicationService
+import models.GoogleBook
 
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository) (implicit val ec: ExecutionContext) extends BaseController {
+class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository, val service: ApplicationService)(implicit val ec: ExecutionContext) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.index().map {
@@ -29,13 +32,6 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-//  def read(id: String): Action[AnyContent] = Action.async { implicit request =>
-//    dataRepository.read(id).map {
-//      case data: DataModel => Ok(Json.toJson(data)) // Successfully found item
-//      case _ => NotFound(Json.toJson(s"Unable to find data for ID: $id")) // Handles missing data and errors
-//    }
-//  }
-
   def read(id: String): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.read(id).map { data =>
       Ok(Json.toJson(data))
@@ -45,13 +41,13 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) => dataRepository.update(id, dataModel).flatMap {
-        _ => dataRepository.read(id).map(book => Accepted {
-          Json.toJson(book)
-        })
+        _ =>
+          dataRepository.read(id).map(book => Accepted {
+            Json.toJson(book)
+          })
       }
       case JsError(_) => Future(BadRequest)
     }
@@ -63,6 +59,16 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
       case JsError(_) => Future(NotFound)
     }
   }
+
+  def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
+    service.getGoogleBook(search = search, term = term).map { book =>
+      Ok(Json.toJson(book))
+    }.recover {
+      case _: NoSuchElementException =>
+        NotFound(Json.toJson("error" -> s"Unable to find book: $term"))
+    }
+  }
+
 
 }
 

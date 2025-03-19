@@ -2,7 +2,7 @@ package services
 
 import connectors.LibraryConnector
 import models.DataModel
-import models.Book
+import models.GoogleBook.Book
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 

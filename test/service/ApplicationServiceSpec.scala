@@ -16,22 +16,39 @@ class ApplicationServiceSpec extends BaseSpec with MockFactory with ScalaFutures
   val mockConnector = mock[LibraryConnector]
   implicit val executionContext: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   val testService = new ApplicationService(mockConnector)
+
+  /**
+   * VolumeInfo(title: String, description: String, pageCount: Int, industryIdentifier: Seq[Seq[IndustryIdentifier]], imageLink: ImageLink)
+   */
   val gameOfThrones: JsValue = Json.obj(
+
     "volumeInfo" -> Json.obj(
       "title" -> "A Game of Thrones",
       "description" -> "The best book!!!",
-      "pageCount" -> 100),
-    "industryIdentifier" -> Json.arr(
-      Json.obj("identifier" ->
-        "9780553103540"
-      )))
+      "pageCount" -> 100,
+      "imageLink" -> Json.obj(
+      "smallThumbnail" -> "http://example.com/small.jpg",
+      "thumbnail" -> "http://example.com/thumbnail.jpg"
+      ),
+      "industryIdentifier" -> Json.arr(
+        Json.obj("identifier" ->
+          "9780553103540"
+        )
+      )
+    )
+  )
 
+
+  // "imageLink" -> Json.obj(
+  //        "smallThumbnail" -> "http://example.com/small.jpg",
+  //        "thumbnail" -> "http://example.com/thumbnail.jpg"
 
   "getGoogleBook" should {
     val url: String = "testUrl"
 
     "return a book" in {
       val expectedBook = gameOfThrones.as[Book]
+
       (mockConnector.get[Book](_: String)(_: OFormat[Book], _: ExecutionContext))
         .expects(url, *, *)
         .returning(Future.successful(expectedBook))

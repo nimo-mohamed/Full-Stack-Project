@@ -2,7 +2,7 @@ package models.GoogleBook
 
 import play.api.libs.json.{Json, OFormat}
 
-case class VolumeInfo(title: String, description: String, pageCount: Int, industryIdentifier: Seq[IndustryIdentifier], imageLink: ImageLink)
+case class VolumeInfo(title: String, description: String, pageCount: Int, industryIdentifier: Seq[Seq[IndustryIdentifier]], imageLink: ImageLink)
 
 
 object VolumeInfo {

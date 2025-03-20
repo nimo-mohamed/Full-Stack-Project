@@ -27,8 +27,8 @@ class ApplicationServiceSpec extends BaseSpec with MockFactory with ScalaFutures
       "description" -> "The best book!!!",
       "pageCount" -> 100,
       "imageLink" -> Json.obj(
-      "smallThumbnail" -> "http://example.com/small.jpg",
-      "thumbnail" -> "http://example.com/thumbnail.jpg"
+        "smallThumbnail" -> "http://example.com/small.jpg",
+        "thumbnail" -> "http://example.com/thumbnail.jpg"
       ),
       "industryIdentifier" -> Json.arr(
         Json.obj("identifier" ->
@@ -37,11 +37,6 @@ class ApplicationServiceSpec extends BaseSpec with MockFactory with ScalaFutures
       )
     )
   )
-
-
-  // "imageLink" -> Json.obj(
-  //        "smallThumbnail" -> "http://example.com/small.jpg",
-  //        "thumbnail" -> "http://example.com/thumbnail.jpg"
 
   "getGoogleBook" should {
     val url: String = "testUrl"
@@ -54,7 +49,21 @@ class ApplicationServiceSpec extends BaseSpec with MockFactory with ScalaFutures
         .returning(Future.successful(expectedBook))
         .once()
 
-      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result => result shouldBe expectedBook
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result =>
+        result shouldBe expectedBook
+      }
+    }
+
+    "return an error" in {
+      val url: String = "testUrl"
+
+      (mockConnector.get[Book](_: String)(_: OFormat[Book], _: ExecutionContext))
+        .expects(url, *, *)
+        .returning(???) // How do we return an error?
+        .once()
+
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { result =>
+        result shouldBe
       }
     }
   }

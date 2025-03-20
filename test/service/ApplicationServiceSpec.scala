@@ -55,15 +55,17 @@ class ApplicationServiceSpec extends BaseSpec with MockFactory with ScalaFutures
     }
 
     "return an error" in {
+      val exception = new RuntimeException("API call failed")
+
       val url: String = "testUrl"
 
       (mockConnector.get[Book](_: String)(_: OFormat[Book], _: ExecutionContext))
         .expects(url, *, *)
-        .returning(???) // How do we return an error?
+        .returning(Future.failed(exception))// How do we return an error?
         .once()
 
-      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { result =>
-        result shouldBe
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result =>
+        result shouldBe exception
       }
     }
   }

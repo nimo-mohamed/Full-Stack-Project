@@ -63,4 +63,16 @@ class DataRepository @Inject()(
 
   def deleteAll(): Future[Unit] = collection.deleteMany(empty()).toFuture().map(_ => ()) //Hint: needed for tests
 
+  private def byName(name: String): Bson =
+    Filters.and(
+      Filters.equal("_name", name)
+    )
+
+  def findByName(name: String): Future[DataModel] =
+    collection.find(byName(name)).headOption flatMap {
+      case Some(data) =>
+        Future(data)
+      case None => Future.failed(new NoSuchElementException(s"Data with title $name not found"))
+    }
+
 }

@@ -1,11 +1,12 @@
 package service
 
 import baseSpec.BaseSpec
+import cats.data.EitherT
 import connectors.LibraryConnector
+import models.APIError
 import models.GoogleBook.Book
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json, OFormat}
 import services.ApplicationService
@@ -46,25 +47,27 @@ class ApplicationServiceSpec extends BaseSpec with MockFactory with ScalaFutures
 
       (mockConnector.get[Book](_: String)(_: OFormat[Book], _: ExecutionContext))
         .expects(url, *, *)
-        .returning(Future.successful(expectedBook))
+        .returning(EitherT.rightT[Future, APIError](expectedBook))
         .once()
 
-      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result =>
-        result shouldBe expectedBook
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { either =>
+        either shouldBe Right(expectedBook)
+
       }
     }
 
     "return an error" in {
-      val exception = new RuntimeException("API call failed")
+
       val url: String = "testUrl"
+      val error = APIError.BadAPIResponse(500, "API call failed")
 
       (mockConnector.get[Book](_: String)(_: OFormat[Book], _: ExecutionContext))
         .expects(url, *, *)
-        .returning(Future.failed(exception))// How do we return an error?
+        .returning(EitherT.leftT[Future, Book](error)) // How do we return an error?
         .once()
 
-      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").failed) { result =>
-        result shouldBe exception
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { either =>
+        either shouldBe Left(error)
       }
     }
   }

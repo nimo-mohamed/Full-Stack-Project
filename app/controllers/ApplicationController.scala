@@ -68,6 +68,15 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
         ))
     }
   }
+
+  def findByName(name: String): Action[AnyContent] = Action.async { implicit request =>
+    dataRepository.findByName(name).map { data =>
+      Ok(Json.toJson(data))
+    }.recover {
+      case _: NoSuchElementException =>
+        NotFound(Json.toJson(s"Unable to find data for title: $name"))
+    }
+  }
 }
 
 

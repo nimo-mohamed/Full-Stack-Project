@@ -78,23 +78,30 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(readResult) shouldBe Status.NOT_FOUND
       afterEach()
     }
-    //    "Return a NOT_FOUND, 404" in {
-    //      beforeEach()
-    //
-    //      val nonExistentId = "non-existent-id"
-    //      val request = buildGet("/api/$nonExistentId")
-    //
-    //      val readResult: Future[Result] = TestApplicationController.read(nonExistentId)(request)
-    //
-    //      status(readResult) shouldBe Status.NOT_FOUND
-    //      contentAsString(readResult) should include("Unable to find data for ID")
-    //
-    //      afterEach()
-    //    }
   }
 
+  "ApplicationController .findByName" should {
 
+    "find a book in the database by its name" in {
+      beforeEach()
+      val request: FakeRequest[JsValue] = buildPost("/api/create").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
 
+      status(createdResult) shouldBe Status.CREATED
+
+      val nameResult: Future[Result] = TestApplicationController.findByName("test name")(FakeRequest())
+      status(nameResult) shouldBe Status.OK
+      contentAsJson(nameResult).as[DataModel] shouldBe dataModel
+      afterEach()
+    }
+
+    "return a NOT_FOUND error when a title doesn't exist" in {
+      beforeEach()
+      val nameResult: Future[Result] = TestApplicationController.findByName("fake name")(FakeRequest())
+      status(nameResult) shouldBe Status.NOT_FOUND
+      afterEach()
+    }
+  }
 
 
   // ✅ .update tests
@@ -127,6 +134,8 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
   }
+
+
 
   // ✅ .delete tests
   "ApplicationController .delete(id: String)" should {

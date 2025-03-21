@@ -65,7 +65,7 @@ class DataRepository @Inject()(
 
   private def byName(name: String): Bson =
     Filters.and(
-      Filters.equal("_name", name)
+      Filters.equal("name", name)
     )
 
   def findByName(name: String): Future[DataModel] =

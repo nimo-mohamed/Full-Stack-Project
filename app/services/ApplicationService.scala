@@ -4,7 +4,6 @@ import cats.data.EitherT
 import connectors.LibraryConnector
 import models.{APIError, DataModel}
 import models.GoogleBook.Book
-import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 
 import javax.inject.Inject

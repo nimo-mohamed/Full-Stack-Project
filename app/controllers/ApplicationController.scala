@@ -1,7 +1,5 @@
 package controllers
 
-// import akka.io.dns.internal.DnsClient.DnsQuestion
-
 import models.{APIError, DataModel, GoogleBook}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
@@ -18,11 +16,10 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     dataRepository.index().map {
       case Right(item: Seq[DataModel]) => Ok(Json.toJson(item))
       case Left(APIError.BadAPIResponse(statusCode, message)) =>
-              Status(statusCode)(Json.toJson(message))
+        Status(statusCode)(Json.toJson(message))
     }
   }
 
-  //case Left(error: APIError) => Status(error.BadAPIResponse(404))(Json.toJson("Unable to find any books"))
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
@@ -71,22 +68,6 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
         ))
     }
   }
-
-  //Left(error) => APIError.BadAPIResponse
-
-//  {
-//    case _: NoSuchElementException =>
-//      NotFound(Json.toJson("error" -> s"Unable to find book: $term"))
-//  }
-
-  // def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
-  //    service.getGoogleBook(search = search, term = term).value.map {
-  //      case Right(book) => ??? //Hint: This should be the same as before
-  //      case Left(error) => ???
-  //    }
-  //  }
-
-
 }
 
 

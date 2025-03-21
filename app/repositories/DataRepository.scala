@@ -24,11 +24,6 @@ class DataRepository @Inject()(
   replaceIndexes = false
 ) {
 
-//  def index(): Future[Either[Int, Seq[DataModel]]] =
-//    collection.find().toFuture().map {
-//      case books: Seq[DataModel] => Right(books)
-//      case _ => Left(404)
-//    }
   def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]] =
     collection.find().toFuture().map {
       case books: Seq[DataModel] => Right(books)
@@ -50,9 +45,8 @@ class DataRepository @Inject()(
     collection.find(byID(id)).headOption flatMap {
       case Some(data) =>
         Future(data)
-      case None       => Future.failed(new NoSuchElementException(s"Data with id $id not found"))
+      case None => Future.failed(new NoSuchElementException(s"Data with id $id not found"))
     }
-
 
 
   def update(id: String, book: DataModel): Future[result.UpdateResult] =

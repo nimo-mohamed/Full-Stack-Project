@@ -2,12 +2,11 @@ package controllers
 
 // import akka.io.dns.internal.DnsClient.DnsQuestion
 
-import models.DataModel
+import models.{APIError, DataModel, GoogleBook}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
 import repositories.DataRepository
 import services.ApplicationService
-import models.GoogleBook
 
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,13 +16,13 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.index().map {
-      case Right(item: Seq[DataModel]) => Ok {
-        Json.toJson(item)
-      }
-      case Left(error) => Status(error)(Json.toJson("Unable to find any books"))
+      case Right(item: Seq[DataModel]) => Ok(Json.toJson(item))
+      case Left(APIError.BadAPIResponse(statusCode, message)) =>
+              Status(statusCode)(Json.toJson(message))
     }
   }
 
+  //case Left(error: APIError) => Status(error.BadAPIResponse(404))(Json.toJson("Unable to find any books"))
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
@@ -61,13 +60,31 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
-    service.getGoogleBook(search = search, term = term).map { book =>
-      Ok(Json.toJson(book))
-    }.recover {
-      case _: NoSuchElementException =>
-        NotFound(Json.toJson("error" -> s"Unable to find book: $term"))
+    service.getGoogleBook(search = search, term = term).value.map {
+
+      case Right(book) => Ok(Json.toJson(book))
+      case Left(APIError.BadAPIResponse(statusCode, message)) =>
+        NotFound(Json.obj(
+          "error" -> s"Unable to find book: $term",
+          "statusCode" -> statusCode,
+          "details" -> message
+        ))
     }
   }
+
+  //Left(error) => APIError.BadAPIResponse
+
+//  {
+//    case _: NoSuchElementException =>
+//      NotFound(Json.toJson("error" -> s"Unable to find book: $term"))
+//  }
+
+  // def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
+  //    service.getGoogleBook(search = search, term = term).value.map {
+  //      case Right(book) => ??? //Hint: This should be the same as before
+  //      case Left(error) => ???
+  //    }
+  //  }
 
 
 }

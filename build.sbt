@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
   "org.scalamock"          %% "scalamock"               % "5.2.0"             % Test,
   "org.scalatestplus.play" %% "scalatestplus-play"   % "5.1.0"          % Test
 )
-
+libraryDependencies += ("org.typelevel"                %% "cats-core"                 % "2.3.0")
 lazy val root = (project in file("."))
   .settings(
     name := "ladies-library"

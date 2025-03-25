@@ -13,7 +13,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[DataRepository])
-trait MockRepository {
+trait DataRepositoryTrait {
   def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]]
   def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]]
   def read(id: String): Future[Either[APIError.BadAPIResponse, DataModel]]
@@ -27,7 +27,7 @@ trait MockRepository {
 @Singleton
 class DataRepository @Inject()(
                                 mongoComponent: MongoComponent
-                              )(implicit ec: ExecutionContext) extends PlayMongoRepository[DataModel](
+                              )(implicit ec: ExecutionContext) extends PlayMongoRepository[DataModel] (
   collectionName = "dataModels",
   mongoComponent = mongoComponent,
   domainFormat = DataModel.formats,
@@ -35,7 +35,7 @@ class DataRepository @Inject()(
     Indexes.ascending("_id")
   )),
   replaceIndexes = false
-) {
+) with DataRepositoryTrait {
 
   def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]] =
     collection.find().toFuture().map {

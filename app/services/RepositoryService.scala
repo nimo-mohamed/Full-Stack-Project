@@ -2,13 +2,13 @@ package services
 
 import models.{APIError, DataModel}
 import org.mongodb.scala.result
-import repositories.{DataRepository, MockRepository}
+import repositories.{DataRepository, DataRepositoryTrait}
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
 
-class RepositoryService @Inject()(mockRepository: MockRepository) {
+class RepositoryService @Inject()(mockRepository: DataRepositoryTrait) {
 
   def index(): Future[Either[APIError, Seq[DataModel]]] = mockRepository.index()
   def read(id: String): Future[Either[APIError, DataModel]] = mockRepository.read(id)

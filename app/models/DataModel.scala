@@ -1,5 +1,6 @@
 package models
 
+import models.GoogleBook.Book
 import play.api.libs.json.{Json, OFormat}
 
 case class DataModel(_id: String, name: String, description: String, pageCount: Int)
@@ -8,6 +9,7 @@ case class DataModel(_id: String, name: String, description: String, pageCount: 
 object DataModel {
   implicit val formats: OFormat[DataModel] = Json.format[DataModel]
 
-//  val bookOne = DataModel("id1", "Book name", "Author name", 10)
-//  println(bookOne.name)
+  def toBook(dataModel: DataModel): Book = {
+    Book(identifier = dataModel._id, title = dataModel.name, description = dataModel.description, pageCount = dataModel.pageCount)
+  }
 }

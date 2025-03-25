@@ -35,6 +35,7 @@ class DataRepository @Inject()(
       case _ => Right(book)
       case _ => Left(APIError.BadAPIResponse(400, "This request is not valid"))
     }
+
   private def byID(id: String): Bson =
     Filters.and(
       Filters.equal("_id", id)
@@ -42,22 +43,26 @@ class DataRepository @Inject()(
 
   def read(id: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.find(byID(id)).headOption.map {
-      case Some (data) => Right(data)
+      case Some(data) => Right(data)
       case None => Left(APIError.BadAPIResponse(404, "This resource could not be found."))
     }
 
 
-  def update(id: String, book: DataModel): Future[result.UpdateResult] =
+  def update(id: String, book: DataModel): Future[Either[APIError.BadAPIResponse, result.UpdateResult]] =
     collection.replaceOne(
       filter = byID(id),
       replacement = book,
       options = new ReplaceOptions().upsert(true) //What happens when we set this to false? It will not create anything.
-    ).toFuture()
+    ).toFuture().map(Right(_)).recover {
+      case ex: Exception => Left(APIError.BadAPIResponse(500, s"An error occurred: ${ex.getMessage}"))
+    }
 
-  def delete(id: String): Future[result.DeleteResult] =
+  def delete(id: String): Future[Either[APIError.BadAPIResponse, result.DeleteResult]] =
     collection.deleteOne(
       filter = byID(id)
-    ).toFuture()
+    ).toFuture().map(Right(_)).recover {
+      case ex: Exception => Left(APIError.BadAPIResponse(404, s"An error occurred: ${ex.getMessage}"))
+    }
 
   def deleteAll(): Future[Unit] = collection.deleteMany(empty()).toFuture().map(_ => ()) //Hint: needed for tests
 
@@ -66,11 +71,9 @@ class DataRepository @Inject()(
       Filters.equal("name", name)
     )
 
-  def findByName(name: String): Future[DataModel] =
-    collection.find(byName(name)).headOption flatMap {
-      case Some(data) =>
-        Future(data)
-      case None => Future.failed(new NoSuchElementException(s"Data with title $name not found"))
+  def findByName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.find(byName(name)).headOption.map {
+      case Some(data) => Right(data)
+      case None => Left(APIError.BadAPIResponse(404, "This resource could not be found."))
     }
-
 }

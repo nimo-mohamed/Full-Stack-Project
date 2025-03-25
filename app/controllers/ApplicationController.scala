@@ -1,5 +1,6 @@
 package controllers
 
+import com.mongodb.client.result.UpdateResult
 import models.{APIError, DataModel, GoogleBook}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
@@ -28,29 +29,22 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-  def read(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def read(id: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     repositoryService.read(id).map {
-      case Right(item: Seq[DataModel]) => Ok(Json.toJson(item))
+      case Right(item: DataModel) => Ok(Json.toJson(item))
       case Left(APIError.BadAPIResponse(statusCode, message)) =>
         Status(statusCode)(Json.toJson(message))
     }
   }
 
-    //data =>
-    //      Ok(Json.toJson(data))
-    //    }.recover {
-    //      case _: NoSuchElementException =>
-    //        NotFound(Json.toJson(s"Unable to find data for ID: $id"))
-    //    }
-
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
-      case JsSuccess(dataModel, _) => repositoryService.update(id, dataModel).flatMap {
-        _ =>
-          repositoryService.read(id).map(book => Accepted {
-            Json.toJson(book)
-          })
-      }
+      case JsSuccess(dataModel, _) => // further validation of fields
+        repositoryService.update(id, dataModel).map {
+          case Right(result: UpdateResult) => Accepted(Json.toJson(dataModel))
+          case Left(APIError.BadAPIResponse(statusCode, message)) =>
+            Status(statusCode)(Json.toJson(message))
+        }
       case JsError(_) => Future(BadRequest)
     }
   }
@@ -76,11 +70,10 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def findByName(name: String): Action[AnyContent] = Action.async { implicit request =>
-    repositoryService.findByName(name).map { data =>
-      Ok(Json.toJson(data))
-    }.recover {
-      case _: NoSuchElementException =>
-        NotFound(Json.toJson(s"Unable to find data for title: $name"))
+    repositoryService.findByName(name).map {
+      case Right(item: DataModel) => Ok(Json.toJson(item))
+      case Left(APIError.BadAPIResponse(statusCode, message)) =>
+        Status(statusCode)(Json.toJson(message))
     }
   }
 }

@@ -4,16 +4,16 @@ import models.{APIError, DataModel, GoogleBook}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
 import repositories.DataRepository
-import services.ApplicationService
+import services.{ApplicationService, RepositoryService}
 
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository, val service: ApplicationService)(implicit val ec: ExecutionContext) extends BaseController {
+class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val repositoryService: RepositoryService, val service: ApplicationService)(implicit val ec: ExecutionContext) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.index().map {
+    repositoryService.index().map {
       case Right(item: Seq[DataModel]) => Ok(Json.toJson(item))
       case Left(APIError.BadAPIResponse(statusCode, message)) =>
         Status(statusCode)(Json.toJson(message))
@@ -23,13 +23,13 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
-        dataRepository.create(dataModel).map(_ => Created)
+        repositoryService.create(dataModel).map(_ => Created)
       case JsError(_) => Future(BadRequest)
     }
   }
 
   def read(id: String): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.read(id).map { data =>
+    repositoryService.read(id).map { data =>
       Ok(Json.toJson(data))
     }.recover {
       case _: NoSuchElementException =>
@@ -39,9 +39,9 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
-      case JsSuccess(dataModel, _) => dataRepository.update(id, dataModel).flatMap {
+      case JsSuccess(dataModel, _) => repositoryService.update(id, dataModel).flatMap {
         _ =>
-          dataRepository.read(id).map(book => Accepted {
+          repositoryService.read(id).map(book => Accepted {
             Json.toJson(book)
           })
       }
@@ -51,7 +51,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def delete(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
-      case JsSuccess(dataModel, _) => dataRepository.delete(id).map(_ => Accepted)
+      case JsSuccess(dataModel, _) => repositoryService.delete(id).map(_ => Accepted)
       case JsError(_) => Future(NotFound)
     }
   }
@@ -70,7 +70,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def findByName(name: String): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.findByName(name).map { data =>
+    repositoryService.findByName(name).map { data =>
       Ok(Json.toJson(data))
     }.recover {
       case _: NoSuchElementException =>

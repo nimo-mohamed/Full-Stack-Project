@@ -1,5 +1,6 @@
 package repositories
 
+import com.google.inject.ImplementedBy
 import models.{APIError, DataModel}
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.Filters.empty
@@ -10,6 +11,18 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+
+@ImplementedBy(classOf[DataRepository])
+trait MockRepository {
+  def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]]
+  def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]]
+  def read(id: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+  def update(id: String, book: DataModel): Future[Either[APIError.BadAPIResponse, result.UpdateResult]]
+  def delete(id: String): Future[Either[APIError.BadAPIResponse, result.DeleteResult]]
+  def deleteAll(): Future[Unit]
+  def findByName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+}
+
 
 @Singleton
 class DataRepository @Inject()(

@@ -30,22 +30,20 @@ class DataRepository @Inject()(
       case _ => Left(APIError.BadAPIResponse(404, "Books cannot be found"))
     }
 
-  def create(book: DataModel): Future[DataModel] =
-    collection
-      .insertOne(book)
-      .toFuture()
-      .map(_ => book)
-
+  def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.insertOne(book).toFuture().map {
+      case _ => Right(book)
+      case _ => Left(APIError.BadAPIResponse(400, "This request is not valid"))
+    }
   private def byID(id: String): Bson =
     Filters.and(
       Filters.equal("_id", id)
     )
 
-  def read(id: String): Future[DataModel] =
-    collection.find(byID(id)).headOption flatMap {
-      case Some(data) =>
-        Future(data)
-      case None => Future.failed(new NoSuchElementException(s"Data with id $id not found"))
+  def read(id: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.find(byID(id)).headOption.map {
+      case Some (data) => Right(data)
+      case None => Left(APIError.BadAPIResponse(404, "This resource could not be found."))
     }
 
 

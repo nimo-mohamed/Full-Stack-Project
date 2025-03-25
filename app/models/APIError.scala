@@ -15,4 +15,16 @@ object APIError {
       s"Bad response from upstream; got status: $upstreamStatus, and got reason $upstreamMessage"
     )
 
+//  final case class NotFoundError(upstreamStatus: Int, upstreamMessage: String)
+//    extends APIError(
+//    Status.NOT_FOUND,
+//    s"Could not find resource; got status: $upstreamStatus, and got reason $upstreamMessage"
+//  )
+//
+//  final case class BadRequestError(upstreamStatus: Int, upstreamMessage: String)
+//    extends APIError(
+//      Status.BAD_REQUEST,
+//      s"Invalid request; got status: $upstreamStatus, and got reason $upstreamMessage"
+//    )
+
 }

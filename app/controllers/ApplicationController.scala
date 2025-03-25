@@ -29,13 +29,19 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def read(id: String): Action[AnyContent] = Action.async { implicit request =>
-    repositoryService.read(id).map { data =>
-      Ok(Json.toJson(data))
-    }.recover {
-      case _: NoSuchElementException =>
-        NotFound(Json.toJson(s"Unable to find data for ID: $id"))
+    repositoryService.read(id).map {
+      case Right(item: Seq[DataModel]) => Ok(Json.toJson(item))
+      case Left(APIError.BadAPIResponse(statusCode, message)) =>
+        Status(statusCode)(Json.toJson(message))
     }
   }
+
+    //data =>
+    //      Ok(Json.toJson(data))
+    //    }.recover {
+    //      case _: NoSuchElementException =>
+    //        NotFound(Json.toJson(s"Unable to find data for ID: $id"))
+    //    }
 
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {

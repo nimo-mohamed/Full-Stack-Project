@@ -13,9 +13,11 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val repositoryService: RepositoryService, val service: ApplicationService)(implicit val ec: ExecutionContext) extends BaseController {
 
+
+
   def index(): Action[AnyContent] = Action.async { implicit request =>
     repositoryService.index().map {
-      case Right(item: Seq[DataModel]) => Ok(Json.toJson(item))
+      case Right(item: Seq[DataModel]) => Ok(views.html.index(item))
       case Left(APIError.BadAPIResponse(statusCode, message)) =>
         Status(statusCode)(Json.toJson(message))
     }

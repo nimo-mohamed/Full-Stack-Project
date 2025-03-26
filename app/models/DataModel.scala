@@ -9,7 +9,7 @@ case class DataModel(_id: String, name: String, description: String, pageCount: 
 object DataModel {
   implicit val formats: OFormat[DataModel] = Json.format[DataModel]
 
-  def toBook(dataModel: DataModel): Book = {
-    Book(identifier = dataModel._id, title = dataModel.name, description = dataModel.description, pageCount = dataModel.pageCount)
-  }
+//  def toBook(dataModel: DataModel): Book = {
+//    Book(identifier = dataModel._id, title = dataModel.name, description = dataModel.description, pageCount = dataModel.pageCount)
+//  }
 }

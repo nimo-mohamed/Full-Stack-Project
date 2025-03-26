@@ -1,8 +1,6 @@
-@import models.DataModel
+@import models.GoogleBook.Book
 
-
-@(dataModel: Seq[DataModel])
-
+@(dataModel: Book)
 
 @main("The Ladies Library") {
 
@@ -13,72 +11,10 @@
         <div class="container mb-5">
             <h1 class="display-3 row">The Ladies Library</h1>
         </div>
-
-
-        <h3>API Documentation</h3>
         <div class="justify-content-center">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">URL</th>
-                    <th scope="col">HTTP Method</th>
-                    <th scope="col">Required Header</th>
-                    <th scope="col">Body</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">/api</th>
-                    <td><code>GET</code></td>
-                    <td>None</td>
-                    <td>N/A</td>
-                </tr>
-                <tr>
-                    <th scope="row">/api</th>
-                    <td><code>POST</code></td>
-                    <td>Content-Type: application/json</td>
-                    <td><code>
-                        "_id" : String
-                        <br>
-                        "name" : String
-                        <br>
-                        "description" : String
-                        <br>
-                        "numSales" : Int
-                    </code></td>
-                </tr>
-                <tr>
-                    <th scope="row">/api/:id</th>
-                    <td><code>GET</code></td>
-                    <td>None</td>
-                    <td>N/A</td>
-                </tr>
-                <tr>
-                    <th scope="row">/api/:id</th>
-                    <td><code>PUT</code></td>
-                    <td>Content-Type: application/json</td>
-                    <td><code>
-                        "_id" : String
-                        <br>
-                        "name" : String
-                        <br>
-                        "description" : String
-                        <br>
-                        "numSales" : Int
-                    </code></td>
-                </tr>
-                <tr>
-                    <th scope="row">/api/:id</th>
-                    <td><code>DELETE</code></td>
-                    <td>Content-Type: application/json</td>
-                    <td>N/A</td>
-                </tr>
-                <h1>@dataModel(0).name</h1>
-                <p><strong>PageCount:</strong> @dataModel(0).pageCount</p>
-                <p><strong>Description:</strong> @dataModel(0).description</p>
-
-                </tbody>
-            </table>
+            <h1>@dataModel.volumeInfo.title</h1>
+            <p><strong>PageCount:</strong> @dataModel.volumeInfo.pageCount</p>
+            <p><strong>Description:</strong> @dataModel.volumeInfo.description</p>
         </div>
     </div>
 

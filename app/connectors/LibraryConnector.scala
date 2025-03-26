@@ -2,7 +2,7 @@ package connectors
 
 import cats.data.EitherT
 import models.APIError
-import play.api.libs.json.OFormat
+import play.api.libs.json.{JsError, JsSuccess, OFormat}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,10 +16,10 @@ class LibraryConnector @Inject()(ws: WSClient) {
       response
         .map {
           result =>
-            Right(result.json.as[Response])
-        }
-        .recover { case _: WSResponse =>
-          Left(APIError.BadAPIResponse(500, "Could not connect"))
+            result.json.validate[Response] match {
+              case JsSuccess(bookList, _) => Right(bookList)
+              case JsError(errors) => Left(APIError.BadAPIResponse(500, s"Could not connect: $errors"))
+            }
         }
     }
   }

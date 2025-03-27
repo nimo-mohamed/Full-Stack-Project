@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "ladies_libraray",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

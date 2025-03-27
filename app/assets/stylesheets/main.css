@@ -1,0 +1,52 @@
+/* Styles for The Ladies Library */
+body {
+    background-color: #fdf0f6; /* Light background color */
+    font-family: Montserrat;
+}
+.background-image {
+    position: relative;
+    background-image: url('/assets/Pink_library.jpg'); /* Update the path to your JPEG */
+    background-size: cover; /* To cover the whole div */
+    height: 300px; /* Set the height as needed */
+    width: 100%; /* Set the width as needed */
+    margin-bottom: 10px;
+}
+
+.overlay {
+    position: absolute; /* Position overlay over the image */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2); /* Change 0.5 to your desired opacity (0.0 is fully transparent, 1.0 is fully opaque) */
+}
+
+
+.jumbotron {
+    background-color: #fff; /* White background for the jumbotron */
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #fdf0f6; /* Darkest color for the main title */
+    font-weight: bold;
+    font-size: 36px;
+    font-family: Montserrat;
+    text-shadow: 2px 2px 4px #1e0411;
+}
+
+h3 {
+    color: #951555;
+}
+
+p {
+    color: #771144; /* Darker color for the description and page count */
+}
+
+.card {
+    border: 1px solid #951555;
+    border-radius: 10px; /* Round corners */
+    margin: 15px; /* Space between cards */
+}

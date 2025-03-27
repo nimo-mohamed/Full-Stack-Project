@@ -1,6 +1,7 @@
 package controllers
 
 
+import models.DataModel
 import play.api.mvc._
 
 import javax.inject._
@@ -21,7 +22,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok(views.html.index()))
-  }
+//  def index(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+//    Future.successful(Ok(views.html.index()))
+//  }
 }

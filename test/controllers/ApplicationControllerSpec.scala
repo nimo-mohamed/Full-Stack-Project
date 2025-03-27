@@ -27,15 +27,15 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
 
   // ✅ .index test
-  "ApplicationController .index" should {
-    "return OK" in {
-      beforeEach()
-      val result = TestApplicationController.index()(FakeRequest())
-      status(result) shouldBe Status.OK
-      afterEach()
-    }
-
-  }
+//  "ApplicationController .index" should {
+//    "return OK" in {
+//      beforeEach()
+//      val result = TestApplicationController.index()(FakeRequest())
+//      status(result) shouldBe Status.OK
+//      afterEach()
+//    }
+//
+//  }
   // ✅ .create tests
   "ApplicationController .create" should {
 

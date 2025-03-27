@@ -3,20 +3,22 @@
 @(dataModel: Book)
 
 @main("The Ladies Library") {
-
-<div class="container h-100 d-flex justify-content-center">
-
-    <div class="jumbotron my-auto">
-
-        <div class="container mb-5">
-            <h1 class="display-3 row">The Ladies Library</h1>
-        </div>
-        <div class="justify-content-center">
-            <h1>@dataModel.volumeInfo.title</h1>
-            <p><strong>PageCount:</strong> @dataModel.volumeInfo.pageCount</p>
-            <p><strong>Description:</strong> @dataModel.volumeInfo.description</p>
+<div class="background-image d-flex justify-content-center align-items-center">
+    <div class="overlay"></div>
+<h1 class="display-3 text-center mt-3 mb-4">The Ladies Library</h1>
+</div>
+<div class="container">
+    <div class="container mb-5">
+        <div class="jumbotron my-auto card">
+            <div class="justify-content-center">
+                <h3>@dataModel.volumeInfo.title</h3>
+                <p><strong>PageCount:</strong> @dataModel.volumeInfo.pageCount</p>
+                <p><strong>Description:</strong> @dataModel.volumeInfo.description</p>
+            </div>
         </div>
     </div>
-
 </div>
+<footer class="text-center bg-light py-3 mb-4">
+    <p>This library app was developed by Farnoosh Moayeri, Nimo Mohamed and Dorothea Toeller during the Mercator Academy</p>
+</footer>
 }

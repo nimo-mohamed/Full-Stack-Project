@@ -18,25 +18,39 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
     service.getGoogleBook(search = search, term = term).value.flatMap {
       case Right(bookList) =>
-        println(s"FIREBALL = ${bookList.items}")
-        bookList.items.head match {
-        case book => repositoryService.create(DataModel(book.volumeInfo.industryIdentifiers.head.identifier, book.volumeInfo.title.getOrElse("dummy title"), book.volumeInfo.description.getOrElse("dummy description"), book.volumeInfo.pageCount.getOrElse(0))).map(_ => Ok(views.html.index(book)))
-        case _ =>
+        if (bookList.items.isEmpty) {
           Future(NotFound(Json.obj(
-          "error" -> s"Unable to find book: $term",
-          "statusCode" -> 404,
-          "details" -> "didn't find the book!"
-        )))
-      }
+            "error" -> s"No books found for: $term",
+            "statusCode" -> 404,
+            "details" -> "Search returned no results"
+          )))
+        } else {
+          // Process all books instead of just the first one
+          val booksFuture = Future.sequence(bookList.items.map { book =>
+            val identifier = if (book.volumeInfo.industryIdentifiers.nonEmpty) {
+              book.volumeInfo.industryIdentifiers.head.identifier
+            } else "unknown-id"
+
+            repositoryService.create(DataModel(
+              identifier,
+              book.volumeInfo.title.getOrElse("Unknown Title"),
+              book.volumeInfo.description.getOrElse("No description available"),
+              book.volumeInfo.pageCount.getOrElse(0)
+            ))
+          })
+
+          // Pass all books to the view
+          booksFuture.map(_ => Ok(views.html.index(bookList.items)))
+        }
+
       case Left(APIError.BadAPIResponse(statusCode, message)) =>
         Future(NotFound(Json.obj(
-          "error" -> s"Unable to find book: $term",
+          "error" -> s"Unable to find books for: $term",
           "statusCode" -> statusCode,
           "details" -> message
         )))
     }
   }
-
   private val isbn: String = "0134315057"
 
 //  def index(): Action[AnyContent] = Action.async { implicit request =>

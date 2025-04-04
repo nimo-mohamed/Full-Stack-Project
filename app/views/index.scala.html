@@ -1,14 +1,15 @@
 @import models.GoogleBook.Book
 
-@(dataModel: Book)
+@(dataModels: List[Book])
 
 @main("The Ladies Library") {
 <div class="background-image d-flex justify-content-center align-items-center">
     <div class="overlay"></div>
-<h1 class="display-3 text-center mt-3 mb-4">The Ladies Library</h1>
+    <h1 class="display-3 text-center mt-3 mb-4">The Ladies Library</h1>
 </div>
 <div class="container">
-    <div class="container mb-5">
+    @for(dataModel <- dataModels) {
+    <div class="container mb-4">
         <div class="jumbotron my-auto card">
             <div class="justify-content-center">
                 <h3>@dataModel.volumeInfo.title</h3>
@@ -17,6 +18,7 @@
             </div>
         </div>
     </div>
+    }
 </div>
 <footer class="text-center bg-light py-3 mb-4">
     <p>This library app was developed by Farnoosh Moayeri, Nimo Mohamed and Dorothea Toeller during the Mercator Academy</p>

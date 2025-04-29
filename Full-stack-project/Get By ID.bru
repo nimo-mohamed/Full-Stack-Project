@@ -1,0 +1,20 @@
+meta {
+  name: Get By ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:9000/read/HARVARD:32044019377837
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "_id": "9781394219315",
+    "name": "ABC of Evidence-Based Healthcare",
+    "description": "Updating this description!",
+    "pageCount": 116
+  }
+}

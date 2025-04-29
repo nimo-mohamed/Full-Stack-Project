@@ -1,0 +1,20 @@
+meta {
+  name: Create a Book
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:9000/api/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "_id": "HARVARD:123456789",
+    "name": "The Ladies Library",
+    "description": "Shout out to the most amazing ladies IN THE WORLD!!",
+    "pageCount": 100
+  }
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Updated Book
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:9000/update/HARVARD:32044019377837
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "_id": "HARVARD:32044019377837",
+    "name": "Trippings in Author-land",
+    "description": "I have updated this dummy description",
+    "pageCount": 298
+  }
+}

@@ -1,0 +1,20 @@
+meta {
+  name: CRUD actions!
+  type: http
+  seq: 6
+}
+
+delete {
+  url: http://localhost:9000/delete/12345
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "_id": "12345",
+    "name": "Nimo's Book!",
+    "description": "it's a MUST read!!",
+    "pageCount": 10
+  }
+}
